@@ -27,25 +27,13 @@ void do_type(char** args) {
   }
 
   char** dirs = split_path(getenv("PATH"));
-  int i = 0;
-  int found = 0;
+  char* found_path = find_executable_path(cmd, dirs);
 
-  if (dirs) {
-    char* dir = dirs[0];
-
-    while (dir) {
-      char* full_path = join_path(dir, cmd);
-
-      if (access(full_path, X_OK) == 0) {
-        printf("%s is %s\n", cmd, full_path);
-        found = 1;
-        break;
-      }
-
-      dir = dirs[++i];
-    }
+  if (found_path) {
+    printf("%s is %s\n", cmd, found_path);
+  } else {
+    printf("%s: not found\n", cmd);
   }
 
   free_path_array(dirs);
-  if (found == 0) printf("%s: not found\n", cmd);
 }

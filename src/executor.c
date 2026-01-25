@@ -8,19 +8,11 @@
 
 int execute_command(char** args) {
   char** dirs = split_path(getenv("PATH"));
-  char* found_path = NULL;
   char* cmd = args[0];
 
   if (!dirs) return -1;
 
-  for (int i = 0; dirs[i] != NULL; i++) {
-    char* full_path = join_path(dirs[i], cmd);
-
-    if (access(full_path, X_OK) == 0) {
-      found_path = full_path;
-      break;
-    }
-  }
+  char* found_path = find_executable_path(cmd, dirs);
 
   if (found_path) {
     pid_t pid = fork();

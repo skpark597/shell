@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 char** split_path(const char* path) {
   if (path == NULL) return NULL;
@@ -73,4 +74,16 @@ char* join_args(char** args_array) {
   }
 
   return result;
+}
+
+char* find_executable_path(const char* cmd, char** dirs) {
+  if (!cmd || !dirs) return NULL;
+
+  for (int i = 0; dirs[i] != NULL; i++) {
+    char* full_path = join_path(dirs[i], cmd);
+    if (access(full_path, X_OK) == 0) return full_path;
+    free(full_path);
+  }
+
+  return NULL;
 }
