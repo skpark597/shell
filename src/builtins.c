@@ -9,14 +9,15 @@
 
 Builtin builtins[] = {{"echo", do_echo}, {"exit", do_exit}, {"type", do_type}};
 
-void do_echo(char* cmd) {
-  if (cmd != NULL) printf("%s\n", cmd);
+void do_echo(char** args) {
+  if (args != NULL) printf("%s\n", join_args(args));
 }
 
-void do_exit(char* cmd) { exit(0); }
+void do_exit(char** args) { exit(0); }
 
-void do_type(char* cmd) {
-  if (cmd == NULL) return;
+void do_type(char** args) {
+  if (args == NULL) return;
+  char* cmd = args[1];
 
   for (int i = 0; i < 3; i++) {
     if (strcmp(cmd, builtins[i].name) == 0) {
@@ -25,8 +26,7 @@ void do_type(char* cmd) {
     }
   }
 
-  char* path_env = getenv("PATH");
-  char** dirs = split_path(path_env);
+  char** dirs = split_path(getenv("PATH"));
   int i = 0;
   int found = 0;
 
@@ -42,8 +42,7 @@ void do_type(char* cmd) {
         break;
       }
 
-      i++;
-      dir = dirs[i];
+      dir = dirs[++i];
     }
   }
 

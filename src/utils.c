@@ -51,3 +51,26 @@ void free_path_array(char** dirs) {
   for (int i = 0; dirs[i]; i++) free(dirs[i]);
   free(dirs);
 }
+
+char* join_args(char** args_array) {
+  if (args_array[1] == NULL) return NULL;
+
+  int total_len = 0;
+  for (int i = 1; args_array[i] != NULL; i++) {
+    total_len += strlen(args_array[i]) + 1;
+  }
+
+  char* result = (char*)malloc(total_len);
+  if (!result) return NULL;
+
+  result[0] = '\0';
+
+  for (int i = 1; args_array[i] != NULL; i++) {
+    strcat(result, args_array[i]);
+    if (args_array[i + 1] != NULL) {
+      strcat(result, " ");
+    }
+  }
+
+  return result;
+}
