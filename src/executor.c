@@ -7,7 +7,7 @@
 #include "utils.h"
 
 int execute_command(char** args) {
-  char** dirs = split_path(getenv("PATH"));
+  char** dirs = split_tokens(getenv("PATH"), ':');
   char* cmd = args[0];
 
   if (!dirs) return -1;
@@ -29,10 +29,10 @@ int execute_command(char** args) {
       waitpid(pid, &status, 0);
     }
 
-    free_path_array(dirs);
+    free_tokens(dirs);
     return 0;
   }
 
-  free_path_array(dirs);
+  free_tokens(dirs);
   return -1;
 }

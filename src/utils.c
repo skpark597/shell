@@ -7,33 +7,55 @@
 #include <string.h>
 #include <unistd.h>
 
-char** split_path(const char* path) {
-  if (path == NULL) return NULL;
+int count_tokens(const char* str, char delim) {
+  if (str == NULL || *str == '\0') return 0;
 
   int count = 0;
-  char* tmp = strdup(path);
+  int in_segment = 0;
 
-  if (strtok(tmp, ":")) {
-    count = 1;
-    while (strtok(NULL, ":")) count++;
+  while (*str) {
+    if (*str != delim && in_segment == 0) {
+      in_segment = 1;
+      count++;
+    } else if (*str == delim) {
+      in_segment = 0;
+    }
+
+    str++;
   }
 
-  free(tmp);
+  return count;
+}
+
+char** split_tokens(const char* str, char delim) {
+  if (str == NULL) return NULL;
+
+  int count = count_tokens(str, delim);
 
   char** dirs = malloc(sizeof(char*) * (count + 1));
-  char* path_copy = strdup(path);
-  char* token = strtok(path_copy, ":");
+  if (!dirs) return NULL;
+
+  char* str_copy = strdup(str);
+  char delim_str[2] = {delim, '\0'};
+  char* token = strtok(str_copy, delim_str);
+
   int i = 0;
 
-  while (token) {
+  while (token && i < count) {
     dirs[i++] = strdup(token);
-    token = strtok(NULL, ":");
+    token = strtok(NULL, delim_str);
   }
 
   dirs[i] = NULL;
+  free(str_copy);
 
-  free(path_copy);
   return dirs;
+}
+
+void free_tokens(char** tokens) {
+  if (!tokens) return;
+  for (int i = 0; tokens[i]; i++) free(tokens[i]);
+  free(tokens);
 }
 
 char* join_path(const char* dir, const char* cmd) {
@@ -45,12 +67,6 @@ char* join_path(const char* dir, const char* cmd) {
   if (full_path) snprintf(full_path, len, "%s/%s", dir, cmd);
 
   return full_path;
-}
-
-void free_path_array(char** dirs) {
-  if (!dirs) return;
-  for (int i = 0; dirs[i]; i++) free(dirs[i]);
-  free(dirs);
 }
 
 char* join_args(char** args_array) {

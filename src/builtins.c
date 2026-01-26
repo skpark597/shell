@@ -26,7 +26,7 @@ void do_type(char** args) {
     }
   }
 
-  char** dirs = split_path(getenv("PATH"));
+  char** dirs = split_tokens(getenv("PATH"), ':');
   char* found_path = find_executable_path(cmd, dirs);
 
   if (found_path) {
@@ -35,5 +35,5 @@ void do_type(char** args) {
     printf("%s: not found\n", cmd);
   }
 
-  free_path_array(dirs);
+  free_tokens(dirs);
 }
