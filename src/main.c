@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     char* cmd = args_array[0];
     int is_builtin_executed = 0;
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       if (strcmp(cmd, builtins[i].name) == 0) {
         builtins[i].func(args_array);
         is_builtin_executed = 1;
