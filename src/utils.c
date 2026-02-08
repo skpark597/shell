@@ -1,4 +1,3 @@
-
 #define _POSIX_C_SOURCE 200809L
 #include "utils.h"
 
@@ -61,29 +60,6 @@ char* join_path(const char* dir, const char* cmd) {
   if (full_path) snprintf(full_path, len, "%s/%s", dir, cmd);
 
   return full_path;
-}
-
-char* join_args(char** args_array) {
-  if (args_array[1] == NULL) return NULL;
-
-  int total_len = 0;
-  for (int i = 1; args_array[i] != NULL; i++) {
-    total_len += strlen(args_array[i]) + 1;
-  }
-
-  char* result = (char*)malloc(total_len);
-  if (!result) return NULL;
-
-  result[0] = '\0';
-
-  for (int i = 1; args_array[i] != NULL; i++) {
-    strcat(result, args_array[i]);
-    if (args_array[i + 1] != NULL) {
-      strcat(result, " ");
-    }
-  }
-
-  return result;
 }
 
 char* find_executable_path(const char* cmd, char** dirs) {

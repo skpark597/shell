@@ -11,7 +11,14 @@ Builtin builtins[] = {
     {"echo", do_echo}, {"exit", do_exit}, {"type", do_type}, {"pwd", do_pwd}};
 
 void do_echo(char** args) {
-  if (args != NULL) printf("%s\n", join_args(args));
+  if (!args || !args[0]) return;
+
+  for (int i = 1; args[i] != NULL; ++i) {
+    printf("%s", args[i]);
+    if (args[i + 1] != NULL) printf(" ");
+  }
+
+  printf("\n");
 }
 
 void do_exit(char** args) { exit(0); }
