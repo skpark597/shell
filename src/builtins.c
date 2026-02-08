@@ -1,5 +1,6 @@
 #include "builtins.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +11,7 @@
 
 Builtin builtins[] = {
     {"echo", do_echo}, {"exit", do_exit}, {"type", do_type},
-    {"pwd", do_pwd},   {NULL, NULL},
+    {"pwd", do_pwd},   {"cd", do_cd},     {NULL, NULL},
 };
 
 int find_builtin_idx(char* cmd) {
@@ -75,5 +76,17 @@ void do_pwd(char** args) {
     printf("%s\n", cwd);
   } else {
     perror("getcwd() error");
+  }
+}
+
+void do_cd(char** args) {
+  if (!args[1]) return;
+
+  if (chdir(args[1]) == -1) {
+    fprintf(stderr, "cd: %s: No such file or directory\n", args[1]);
+    g_ctx.last_exit_status = 1;
+  } else {
+    getcwd(g_ctx.cwd, sizeof(g_ctx.cwd));
+    g_ctx.last_exit_status = 0;
   }
 }

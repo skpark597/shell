@@ -15,5 +15,6 @@ void do_echo(char** args);
 void do_exit(char** args);
 void do_type(char** args);
 void do_pwd(char** args);
+void do_cd(char** args);
 
 #endif

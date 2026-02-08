@@ -1,5 +1,8 @@
 #include "context.h"
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include "stdlib.h"
 #include "utils.h"
 
@@ -9,6 +12,7 @@ void init_context(void) {
   g_ctx.is_running = 1;
   g_ctx.last_exit_status = 0;
 
+  getcwd(g_ctx.cwd, sizeof(g_ctx.cwd));
   update_paths();
 }
 

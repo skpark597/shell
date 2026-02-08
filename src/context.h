@@ -1,10 +1,13 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#include <linux/limits.h>
+
 typedef struct s_context {
   char** paths;
   int last_exit_status;
   int is_running;
+  char cwd[PATH_MAX];
 } t_context;
 
 extern t_context g_ctx;
