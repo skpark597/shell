@@ -6,13 +6,15 @@
 
 #include "utils.h"
 
-int execute_command(char** args) {
-  char** dirs = split_tokens(getenv("PATH"), ":");
+int execute_extern(char** args) {
+  if (!args || !args[0]) return 0;
+
+  char** paths = split_tokens(getenv("PATH"), ":");
   char* cmd = args[0];
 
-  if (!dirs) return -1;
+  if (!paths) return 0;
 
-  char* found_path = find_executable_path(cmd, dirs);
+  char* found_path = find_executable_path(cmd, paths);
 
   if (found_path) {
     pid_t pid = fork();
@@ -29,10 +31,10 @@ int execute_command(char** args) {
       waitpid(pid, &status, 0);
     }
 
-    free_tokens(dirs);
-    return 0;
+    free_tokens(paths);
+    return 1;
   }
 
-  free_tokens(dirs);
-  return -1;
+  free_tokens(paths);
+  return 0;
 }

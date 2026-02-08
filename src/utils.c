@@ -47,7 +47,7 @@ char** split_tokens(const char* str, const char* delims) {
 
 void free_tokens(char** tokens) {
   if (!tokens) return;
-  for (int i = 0; tokens[i]; i++) free(tokens[i]);
+  for (int i = 0; tokens[i]; ++i) free(tokens[i]);
   free(tokens);
 }
 

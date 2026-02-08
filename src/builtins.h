@@ -8,6 +8,9 @@ typedef struct {
 
 extern Builtin builtins[];
 
+int get_builtin_idx(char* cmd);
+int execute_builtin(char** args);
+
 void do_echo(char** args);
 void do_exit(char** args);
 void do_type(char** args);

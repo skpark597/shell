@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "builtins.h"
-#include "executor.h"
+#include "extern.h"
 #include "utils.h"
 
 int main(int argc, char* argv[]) {
@@ -17,22 +17,22 @@ int main(int argc, char* argv[]) {
     input[strcspn(input, "\n")] = '\0';
 
     char** args = split_tokens(input, " ");
-    char* cmd = args[0];
 
-    int is_builtin_executed = 0;
-
-    for (int i = 0; i < 4; i++) {
-      if (strcmp(cmd, builtins[i].name) == 0) {
-        builtins[i].func(args);
-        is_builtin_executed = 1;
-        break;
-      }
+    if (!args || !args[0]) {
+      free_tokens(args);
+      continue;
     }
 
-    if (!is_builtin_executed && cmd != NULL) {
-      int result = execute_command(args);
-      if (result == -1) printf("%s: command not found\n", cmd);
+    if (execute_builtin(args)) {
+      free_tokens(args);
+      continue;
     }
+
+    if (!execute_extern(args)) {
+      printf("%s: command not found\n", args[0]);
+    }
+
+    free_tokens(args);
   }
 
   return 0;
