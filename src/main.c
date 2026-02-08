@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "builtins.h"
+#include "context.h"
 #include "extern.h"
 #include "utils.h"
 
@@ -10,7 +11,9 @@ int main(int argc, char* argv[]) {
   setbuf(stdout, NULL);
   char input[100];
 
-  while (1) {
+  init_context();
+
+  while (g_ctx.is_running) {
     printf("$ ");
 
     if (fgets(input, sizeof(input), stdin) == NULL) break;
@@ -23,17 +26,16 @@ int main(int argc, char* argv[]) {
       continue;
     }
 
-    if (execute_builtin(args)) {
-      free_tokens(args);
-      continue;
-    }
-
-    if (!execute_extern(args)) {
-      printf("%s: command not found\n", args[0]);
+    if (!execute_builtin(args)) {
+      if (!execute_extern(args)) {
+        printf("%s: command not found\n", args[0]);
+      }
     }
 
     free_tokens(args);
   }
 
-  return 0;
+  cleanup_context();
+
+  return g_ctx.last_exit_status;
 }

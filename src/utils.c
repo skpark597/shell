@@ -51,7 +51,7 @@ void free_tokens(char** tokens) {
   free(tokens);
 }
 
-char* join_path(const char* dir, const char* cmd) {
+char* join_path(char* dir, char* cmd) {
   if (!dir || !cmd) return NULL;
 
   size_t len = strlen(dir) + strlen(cmd) + 2;
@@ -62,12 +62,13 @@ char* join_path(const char* dir, const char* cmd) {
   return full_path;
 }
 
-char* find_executable_path(const char* cmd, char** dirs) {
-  if (!cmd || !dirs) return NULL;
+char* find_executable_path(char** dirs, char* cmd) {
+  if (!dirs || !cmd) return NULL;
 
-  for (int i = 0; dirs[i] != NULL; i++) {
+  for (int i = 0; dirs[i] != NULL; ++i) {
     char* full_path = join_path(dirs[i], cmd);
     if (access(full_path, X_OK) == 0) return full_path;
+
     free(full_path);
   }
 

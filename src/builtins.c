@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "context.h"
 #include "utils.h"
 
 Builtin builtins[] = {
@@ -12,7 +13,7 @@ Builtin builtins[] = {
     {"pwd", do_pwd},   {NULL, NULL},
 };
 
-int get_builtin_idx(char* cmd) {
+int find_builtin_idx(char* cmd) {
   if (!cmd) return -1;
 
   for (int i = 0; builtins[i].name != NULL; ++i) {
@@ -25,7 +26,7 @@ int get_builtin_idx(char* cmd) {
 int execute_builtin(char** args) {
   if (!args || !args[0]) return 0;
 
-  int idx = get_builtin_idx(args[0]);
+  int idx = find_builtin_idx(args[0]);
 
   if (idx != -1) {
     builtins[idx].func(args);
@@ -52,23 +53,19 @@ void do_type(char** args) {
   if (!args || !args[0] || !args[1]) return;
 
   char* cmd = args[1];
-  int idx = get_builtin_idx(cmd);
 
-  if (idx != -1) {
+  if (find_builtin_idx(cmd) != -1) {
     printf("%s is a shell builtin\n", cmd);
     return;
   }
 
-  char** paths = split_tokens(getenv("PATH"), ":");
-  char* found_path = find_executable_path(cmd, paths);
+  char* path = find_executable_path(g_ctx.paths, cmd);
 
-  if (found_path) {
-    printf("%s is %s\n", cmd, found_path);
+  if (path) {
+    printf("%s is %s\n", cmd, path);
   } else {
     printf("%s: not found\n", cmd);
   }
-
-  free_tokens(paths);
 }
 
 void do_pwd(char** args) {
