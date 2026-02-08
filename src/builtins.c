@@ -80,10 +80,16 @@ void do_pwd(char** args) {
 }
 
 void do_cd(char** args) {
-  if (!args[1]) return;
+  char* cd_path =
+      (!args[1] || strcmp(args[1], "~") == 0) ? getenv("HOME") : args[1];
 
-  if (chdir(args[1]) == -1) {
-    fprintf(stderr, "cd: %s: No such file or directory\n", args[1]);
+  if (!cd_path) {
+    fprintf(stderr, "cd: HOME not set");
+    return;
+  }
+
+  if (chdir(cd_path) == -1) {
+    fprintf(stderr, "cd: %s: No such file or directory\n", cd_path);
     g_ctx.last_exit_status = 1;
   } else {
     getcwd(g_ctx.cwd, sizeof(g_ctx.cwd));
