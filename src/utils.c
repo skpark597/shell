@@ -7,18 +7,17 @@
 #include <string.h>
 #include <unistd.h>
 
-int count_tokens(const char* str, char delim) {
+int count_tokens(const char* str, const char* delims) {
   if (str == NULL || *str == '\0') return 0;
 
-  int count = 0;
-  int in_segment = 0;
+  int count = 0, in_segment = 0;
 
   while (*str) {
-    if (*str != delim && in_segment == 0) {
+    if (strchr(delims, *str) != NULL) {
+      in_segment = 0;
+    } else if (in_segment == 0) {
       in_segment = 1;
       count++;
-    } else if (*str == delim) {
-      in_segment = 0;
     }
 
     str++;
@@ -27,29 +26,24 @@ int count_tokens(const char* str, char delim) {
   return count;
 }
 
-char** split_tokens(const char* str, char delim) {
+char** split_tokens(const char* str, const char* delims) {
   if (str == NULL) return NULL;
 
-  int count = count_tokens(str, delim);
+  int count = count_tokens(str, delims);
+  if (count == 0) return NULL;
 
-  char** dirs = malloc(sizeof(char*) * (count + 1));
-  if (!dirs) return NULL;
-
+  char** tokens = calloc(count + 1, sizeof(char*));
   char* str_copy = strdup(str);
-  char delim_str[2] = {delim, '\0'};
-  char* token = strtok(str_copy, delim_str);
+  char* token = strtok(str_copy, delims);
 
-  int i = 0;
-
-  while (token && i < count) {
-    dirs[i++] = strdup(token);
-    token = strtok(NULL, delim_str);
+  for (int i = 0; i < count && token; ++i) {
+    tokens[i] = strdup(token);
+    token = strtok(NULL, delims);
   }
 
-  dirs[i] = NULL;
   free(str_copy);
 
-  return dirs;
+  return tokens;
 }
 
 void free_tokens(char** tokens) {

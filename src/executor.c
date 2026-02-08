@@ -7,7 +7,7 @@
 #include "utils.h"
 
 int execute_command(char** args) {
-  char** dirs = split_tokens(getenv("PATH"), ':');
+  char** dirs = split_tokens(getenv("PATH"), ":");
   char* cmd = args[0];
 
   if (!dirs) return -1;
