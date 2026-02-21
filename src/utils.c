@@ -13,12 +13,15 @@ char* next_token(const char** src, const char* delims) {
   if (*start == '\0') return NULL;
 
   char* buffer = malloc(strlen(start) + 1);
-  int idx = 0, in_quotes = 0;
+  char quote = '\0';
+  int idx = 0;
 
   while (*start) {
-    if (*start == '\'') {
-      in_quotes = !in_quotes;
-    } else if (!in_quotes && strchr(delims, *start)) {
+    if (!quote && (*start == '\'' || *start == '\"')) {
+      quote = *start;
+    } else if (quote && *start == quote) {
+      quote = '\0';
+    } else if (!quote && strchr(delims, *start)) {
       break;
     } else {
       buffer[idx++] = *start;
@@ -26,6 +29,7 @@ char* next_token(const char** src, const char* delims) {
 
     start++;
   }
+
   buffer[idx] = '\0';
   *src = start;
 
