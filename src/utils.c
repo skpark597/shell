@@ -6,43 +6,52 @@
 #include <string.h>
 #include <unistd.h>
 
-int count_tokens(const char* str, const char* delims) {
-  if (str == NULL || *str == '\0') return 0;
+char* next_token(const char** src, const char* delims) {
+  const char* start = *src;
 
-  int count = 0, in_segment = 0;
+  while (strchr(delims, *start)) start++;
+  if (*start == '\0') return NULL;
 
-  while (*str) {
-    if (strchr(delims, *str) != NULL) {
-      in_segment = 0;
-    } else if (in_segment == 0) {
-      in_segment = 1;
-      count++;
+  char* buffer = malloc(strlen(start) + 1);
+  int idx = 0, in_quotes = 0;
+
+  while (*start) {
+    if (*start == '\'') {
+      in_quotes = !in_quotes;
+    } else if (!in_quotes && strchr(delims, *start)) {
+      break;
+    } else {
+      buffer[idx++] = *start;
     }
 
-    str++;
+    start++;
   }
+  buffer[idx] = '\0';
+  *src = start;
 
-  return count;
+  char* optimized = realloc(buffer, idx + 1);
+  return optimized != NULL ? optimized : buffer;
 }
 
 char** split_tokens(const char* str, const char* delims) {
   if (str == NULL) return NULL;
 
-  int count = count_tokens(str, delims);
-  if (count == 0) return NULL;
+  int max_slot = strlen(str) / 2 + 2;
+  int idx = 0;
+  char** buffer = malloc(sizeof(char*) * max_slot);
+  const char* cur = str;
 
-  char** tokens = calloc(count + 1, sizeof(char*));
-  char* str_copy = strdup(str);
-  char* token = strtok(str_copy, delims);
+  while (*cur) {
+    char* token = next_token(&cur, delims);
+    if (token == NULL) break;
 
-  for (int i = 0; i < count && token; ++i) {
-    tokens[i] = strdup(token);
-    token = strtok(NULL, delims);
+    buffer[idx++] = token;
   }
 
-  free(str_copy);
+  buffer[idx] = NULL;
 
-  return tokens;
+  char** optimized = realloc(buffer, sizeof(char*) * (idx + 1));
+  return optimized;
 }
 
 void free_tokens(char** tokens) {
