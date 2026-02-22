@@ -13,11 +13,16 @@ char* next_token(const char** src, const char* delims) {
   if (*start == '\0') return NULL;
 
   char* buffer = malloc(strlen(start) + 1);
-  char quote = '\0';
+  char backslash = '\0', quote = '\0';
   int idx = 0;
 
   while (*start) {
-    if (!quote && (*start == '\'' || *start == '\"')) {
+    if (backslash) {
+      buffer[idx++] = *start;
+      backslash = '\0';
+    } else if (!quote && *start == '\\') {
+      backslash = *start;
+    } else if (!quote && (*start == '\'' || *start == '\"')) {
       quote = *start;
     } else if (quote && *start == quote) {
       quote = '\0';
